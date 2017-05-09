@@ -2,11 +2,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Random;
 
 import static java.lang.System.in;
@@ -17,20 +17,39 @@ import static java.lang.System.in;
 public class ScratchProjectAggregator {
     private static String GET_URL =
             "http://projects.scratch.mit.edu/internalapi/project/";
-    private JSONObject[] projects;
+    private static JSONObject[] projects;
 
     public static void main(String[] args) throws IOException {
+
         if (args.length < 1) {
             System.out.print("Usage: ScratchProjectAggregator <sample size>");
             return;
         }
+
         int sampleSize = Integer.parseInt(args[0]);
+        /* time stamped directory for output */
+        String timeStamp
+                = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+        File dir = new File("Sample" + timeStamp);
+        dir.mkdir();
         try{
-            getScratchProjects(sampleSize);
+            projects = getScratchProjects(sampleSize);
+
+            for (int i = 0; i < projects.length; i++) {
+                File file = new File(dir, "project" + i + ".json");
+                FileWriter fileWriter
+                        = new FileWriter(file);
+                fileWriter.write(projects[i].toString());
+                fileWriter.close();
+            }
         }
         catch (JSONException ex)
         {
             ex.printStackTrace();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
     }
 
