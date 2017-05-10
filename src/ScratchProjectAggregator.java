@@ -80,10 +80,13 @@ public class ScratchProjectAggregator {
                 {
                     response.append(inputLine);
                 }
-                JSONObject jsonObj = new JSONObject(response.toString());
-                projects[projCounter] = jsonObj;
-                projCounter++;
-                System.out.println("added project " + projID + " sucessfully.");
+                /* this seems like a dumb hack but I am tired */
+                if (response.toString().substring(0,1).equals("{")) {
+                    JSONObject jsonObj = new JSONObject(response.toString());
+                    projects[projCounter] = jsonObj;
+                    projCounter++;
+                    System.out.println("added project " + projID + " sucessfully.");
+                }
             }
             else {
                 System.out.println("id " + projID + " not valid.");
